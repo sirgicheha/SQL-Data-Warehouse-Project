@@ -1,0 +1,15 @@
+-- Customer Information Table
+-- Check for Nulls or Duplicates in the Primary Ket
+SELECT cst_id, COUNT(*)
+FROM silver.crm_cust_info
+GROUP BY cst_id
+HAVING COUNT(*) > 1;
+
+-- Check for unwanted spaces
+SELECT cst_firstname
+FROM silver.crm_cust_info
+WHERE cst_firstname != TRIM(cst_firstname)
+
+-- Data Standardziation and Consistency
+SELECT DISTINCT cst_gndr
+FROM silver.crm_cust_info;
