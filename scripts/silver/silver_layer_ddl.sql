@@ -1,8 +1,37 @@
-EXEC silver.load_silver
+/*
+===============================================================================
+Stored Procedure: Load Silver Layer (Bronze -> Silver)
+===============================================================================
+Script Purpose:
+    This stored procedure performs the ETL (Extract, Transform, Load) process to 
+    populate the 'silver' schema tables from the 'bronze' schema.
+	Actions Performed:
+		- Truncates Silver tables.
+		- Inserts transformed and cleansed data from Bronze into Silver tables.
+		
+Parameters:
+    None. 
+	  This stored procedure does not accept any parameters or return any values.
+
+Usage Example:
+    EXEC Silver.load_silver;
+===============================================================================
+*/
 
 CREATE OR ALTER PROCEDURE silver.load_silver AS
 BEGIN
+	    DECLARE @start_time DATETIME, @end_time DATETIME, @batch_start_time DATETIME, @batch_end_time DATETIME; 
+    BEGIN TRY
+        SET @batch_start_time = GETDATE();
+        PRINT '================================================';
+        PRINT 'Loading Silver Layer';
+        PRINT '================================================';
 
+		PRINT '------------------------------------------------';
+		PRINT 'Loading CRM Tables';
+		PRINT '------------------------------------------------';
+		-- Loading silver.crm_cust_info
+		SET @start_time = GETDATE();	
 		PRINT '>> Truncating Table: silver.crm_cust_info';
 		TRUNCATE TABLE silver.crm_cust_info;
 		PRINT '>> Inserting Data into: silver.crm_cust_info';
@@ -33,11 +62,12 @@ BEGIN
 		ROW_NUMBER() OVER (PARTITION BY cst_id ORDER BY cst_create_date) AS flagged 
 		FROM bronze.crm_cust_info) T --Removing duplicate rows
 		WHERE flagged = 1;
+		SET @end_time = GETDATE();
+		PRINT '>> Load Time for silver.crm_cust_info: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS VARCHAR) + ' seconds';					
+		PRINT '------------------------------------------------';
 
 
-
-
-
+		SET @start_time = GETDATE();
 		PRINT '>> Truncating Table: silver.crm_prd_info';
 		TRUNCATE TABLE silver.crm_prd_info;
 		PRINT '>> Inserting Data into: silver.crm_prd_info';
@@ -67,13 +97,16 @@ BEGIN
 			  CAST(prd_start_dt AS DATE) AS prd_start_dt,
 			  -- Making sure that the timeline matches up for a product with multiple entries depicting chage of price over time
 			  CAST(LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt)-1 AS DATE) AS prd_end_dt
-		  FROM bronze.crm_prd_info
-
+		FROM bronze.crm_prd_info
+		SET @end_time = GETDATE();
+        PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        PRINT '>> -------------';
 
  
  
-
-		 PRINT '>> Truncating Table: silver.crm_sales_details';
+		-- Loading crm_sales_details
+		SET @start_time = GETDATE();
+		PRINT '>> Truncating Table: silver.crm_sales_details';
 		TRUNCATE TABLE silver.crm_sales_details;
 		PRINT '>> Inserting Data into: silver.crm_sales_details';
 		  -- Sales Details Table
@@ -115,13 +148,19 @@ BEGIN
 					ELSE sls_price
 			  END AS sls_price 
 		FROM bronze.crm_sales_details
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+		PRINT '>> -------------';
 
 
 
 
 
-
-
+		PRINT '------------------------------------------------';
+		PRINT 'Loading ERP Tables';	
+		PRINT '------------------------------------------------';
+		-- Loading erp_cust_az12		
+		SET @start_time = GETDATE();
 		PRINT '>> Truncating Table: silver.erp_cust_az12';
 		TRUNCATE TABLE silver.erp_cust_az12;
 		PRINT '>> Inserting Data into: silver.erp_cust_az12';
@@ -144,13 +183,16 @@ BEGIN
 				ELSE 'Unknown'
 			END AS gen
 		FROM bronze.erp_cust_az12
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';	
+		PRINT '>> -------------';
 
 
 
 
 
-
-
+		-- Loading erp_location_info
+		SET @start_time = GETDATE();
 		PRINT '>> Truncating Table: silver.erp_loc_a101';
 		TRUNCATE TABLE silver.erp_loc_a101;
 		PRINT '>> Inserting Data into: silver.erp_loc_a101';
@@ -167,12 +209,15 @@ BEGIN
 				ELSE TRIM(cntry)
 		END AS cntry
 		FROM bronze.erp_loc_a101;
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';	
+		PRINT '>> -------------';
 
 
 
 
-
-
+		-- Loading erp_px_cat_g1v2
+		SET @start_time = GETDATE();
 		PRINT '>> Truncating Table: silver.erp_px_cat_g1v2';
 		TRUNCATE TABLE silver.erp_px_cat_g1v2;
 		PRINT '>> Inserting Data into: silver.erp_px_cat_g1v2';
@@ -181,4 +226,23 @@ BEGIN
 
 		SELECT id, cat, subcat, maintenance
 		FROM bronze.erp_px_cat_g1v2;
+		SET @end_time = GETDATE();
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';	
+		PRINT '>> -------------';
+
+				SET @batch_end_time = GETDATE();
+		PRINT '=========================================='
+		PRINT 'Loading Silver Layer is Completed';
+        PRINT '   - Total Load Duration: ' + CAST(DATEDIFF(SECOND, @batch_start_time, @batch_end_time) AS NVARCHAR) + ' seconds';
+		PRINT '=========================================='
+		
+	END TRY
+	BEGIN CATCH
+		PRINT '=========================================='
+		PRINT 'ERROR OCCURED DURING LOADING BRONZE LAYER'
+		PRINT 'Error Message' + ERROR_MESSAGE();
+		PRINT 'Error Message' + CAST (ERROR_NUMBER() AS NVARCHAR);
+		PRINT 'Error Message' + CAST (ERROR_STATE() AS NVARCHAR);
+		PRINT '=========================================='
+	END CATCH
 END
