@@ -1,48 +1,80 @@
-# SQL-Data-Warehouse-Project
-Building a modern data warehouse in SQL Server, including ETL processes, data modelling and analytics
+# SQL Data Warehouse Project 🚀
 
---- 
-## Data Architecture
-The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
+This project demonstrates the end-to-end development of a modern SQL-based data warehouse, following best practices used in real-world enterprise data environments.
+
+> **Portfolio Page:** [Notion Project Page](https://www.notion.so/Samuel-Gicheha-1943b978e39a80e89503dc0cb494c46f?pvs=21)
+
+---
+
+##  Overview
+
+A scalable, layered architecture that transforms raw source data (CRM & ERP) into clean, business-ready analytics using SQL Server and the Medallion architecture (Bronze, Silver, Gold).
+
+**Key Features:**
+- Complete ETL process with raw-to-report lineage
+- Star schema data model optimized for reporting
+- Automated stored procedures with logging
+- Data quality checks and business rule enforcement
+- Fully documented diagrams, data catalog, and project plan
+
+---
+
+##  Architecture
+
 ![Data Architecture](assets/data_architecture.png)
 
----
-1. **Bronze Layer**: Stores raw data as-is from the source systems. Data is ingested from CSV Files into SQL Server Database.
-2. **Silver Layer**: This layer includes data cleansing, standardization, and normalization processes to prepare data for analysis.
-3. **Gold Layer**: Houses business-ready data modeled into a star schema required for reporting and analytics.
-
----
-## Project Overview
-This project involves:
-
-1. **Data Architecture**: Designing a Modern Data Warehouse Using Medallion Architecture **Bronze**, **Silver**, and **Gold** layers.
-2. **ETL Pipelines**: Extracting, transforming, and loading data from source systems into the warehouse.
-3. **Data Modeling**: Developing fact and dimension tables optimized for analytical queries.
-4. **Analytics & Reporting**: Creating SQL-based reports and dashboards for actionable insights.
-
----
-## Project Requirements
-
-### Building the Data Warehouse (Data Engineering)
-
-#### Objective
-Develop a modern data warehouse using SQL Server to consolidate sales data, enabling analytical reporting and informed decision-making.
-
-#### Specifications
-- **Data Sources**: Import data from two source systems (ERP and CRM) provided as CSV files.
-- **Data Quality**: Cleanse and resolve data quality issues prior to analysis.
-- **Integration**: Combine both sources into a single, user-friendly data model designed for analytical queries.
-- **Scope**: Focus on the latest dataset only; historization of data is not required.
-- **Documentation**: Provide clear documentation of the data model to support both business stakeholders and analytics teams.
+- **Bronze Layer:** Raw data ingestion (CSV → SQL)
+- **Silver Layer:** Cleansed and enriched data
+- **Gold Layer:** Star schema model (fact & dimensions)
 
 ---
 
-### BI: Analytics & Reporting (Data Analysis)
+##  Tech Stack
 
-#### Objective
-Develop SQL-based analytics to deliver detailed insights into:
-- **Customer Behavior**
-- **Product Performance**
-- **Sales Trends**
+- SQL Server Express + SQL Server Management Studio
+- Git for version control
+- [Draw.io](http://draw.io/) for diagramming
+- Notion for project planning
 
-These insights empower stakeholders with key business metrics, enabling strategic decision-making.  
+---
+
+##  ETL Workflows
+
+### Bronze
+
+- Schema mirrors source structure
+- Full reload using `BULK INSERT`
+- Basic validation (row count, schema match)
+
+### Silver
+
+- Cleansing: deduplication, normalization, null handling
+- Standardized with metadata (`dw_create_date`)
+- Full load with `load_silver` stored procedure
+
+### Gold
+
+- Fact + dimension views with surrogate keys
+- Business rules enforced
+- Optimized for reporting tools
+
+---
+
+##  Documentation
+
+- [Architecture Diagrams](assets/data_architecture.png)
+- [Data Catalog](docs/)
+- [SQL Scripts](scripts/)
+- [Project Plan](https://www.notion.so/Data-Warehouse-Project-Plan-and-Tasks-2083b978e39a8084aadbdff3f2584d25?pvs=21)
+
+---
+
+##  Best Practices Demonstrated
+
+- Medallion architecture for modularity
+- SQL window functions for deduplication, ranking, surrogate keys
+- Stored procedures with robust error handling
+- Reusable scripts and clean folder structure
+- Clear naming conventions and documentation
+
+---
