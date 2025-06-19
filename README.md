@@ -1,9 +1,8 @@
-# SQL Data Warehouse Project 🚀
+# SQL Data Warehouse Project 
 
 This project demonstrates the end-to-end development of a modern SQL-based data warehouse, following best practices used in real-world enterprise data environments.
 
-> **Portfolio Page:** [Notion Project Page](https://www.notion.so/Samuel-Gicheha-1943b978e39a80e89503dc0cb494c46f?pvs=21)
-
+> **Portfolio Page:** [Notion Project Page](https://sirgicheha.notion.site/SQL-Data-Warehouse-2173b978e39a80468dacdbb1d85c8874)
 ---
 
 ##  Overview
