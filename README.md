@@ -62,7 +62,6 @@ A scalable, layered architecture that transforms raw source data (CRM & ERP) int
 ##  Documentation
 
 - [Architecture Diagrams](assets/)
-- [Data Catalog](docs/)
 - [SQL Scripts](scripts/)
 - [Project Plan](https://www.notion.so/Data-Warehouse-Project-Plan-and-Tasks-2083b978e39a8084aadbdff3f2584d25?pvs=21)
 
