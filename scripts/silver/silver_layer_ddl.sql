@@ -246,3 +246,5 @@ BEGIN
 		PRINT '=========================================='
 	END CATCH
 END
+
+EXEC Silver.load_silver;
